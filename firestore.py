@@ -30,10 +30,6 @@ def get_allowed_providers_and_models():
     return {"providers": result}
 
 
-
-
-
-
 def fetch_provider_document(provider_id):
     """Helper to get provider Firestore document or raise error."""
     provider_ref = db.collection("providers").document(provider_id)
@@ -41,6 +37,35 @@ def fetch_provider_document(provider_id):
     if not provider_doc.exists:
         raise Exception(f"Provider '{provider_id}' not found.")
     return provider_doc
+
+def get_provider_config(provider_id, include_api_key=True):
+    """Returns an instantiated provider class (e.g., OpenAIProvider)."""
+    doc = fetch_provider_document(provider_id)
+    provider_data = doc.to_dict()
+
+    # Fetch enabled models from subcollection
+    models_ref = doc.reference.collection("models")
+    models = []
+    for model_doc in models_ref.stream():
+        model_data = model_doc.to_dict()
+        if model_data.get("enabled", False):
+            models.append({
+                "id": model_doc.id,
+                "temperature": model_data.get("temperature", 1.0),
+            })
+
+    provider_data["models"] = models
+
+    # Optionally add API key
+    if include_api_key:
+        provider_data["api_key"] = provider_data.get("api_key")
+
+    # Instantiate provider wrapper (OpenAIProvider, etc.)
+    return get_provider(provider_id, provider_data)
+
+
+
+
 
 def get_monthly_usage(provider_id):
     now = datetime.utcnow()
@@ -77,54 +102,6 @@ def estimate_cost(model, tokens):
     }
     rate = prices.get(model, 0.002 / 1000)  # default rate
     return tokens * rate
-
-def parse_provider(provider_doc, include_api_key=False):
-    """Convert a provider document into a dict including enabled models."""
-    provider_data = provider_doc.to_dict()
-    provider_id = provider_doc.id
-
-    # Get models subcollection
-    models_ref = provider_doc.reference.collection("models")
-    models = []
-    for model_doc in models_ref.stream():
-        model_data = model_doc.to_dict()
-        if model_data.get("enabled", False):
-            models.append({
-                "id": model_doc.id,
-                "temperature": model_data.get("temperature", 1.0),
-                # Extend as needed
-            })
-
-    # Build result
-    result = {
-        "id": provider_id,
-        "name": provider_data.get("name", provider_id.title()),
-        "default_model": provider_data.get("default_model"),
-        "models": models
-    }
-
-    if include_api_key:
-        result["api_key"] = provider_data.get("api_key")
-
-    return result
-
-
-def get_provider_config(provider_id, include_api_key=True):
-    """Public method to fetch config for a specific provider."""
-    provider_doc = fetch_provider_document(provider_id)
-    return parse_provider(provider_doc, include_api_key=include_api_key)
-
-
-def get_allowed_providers_and_models():
-    """Fetch all providers (no API keys), for frontend dropdowns."""
-    providers_ref = db.collection("providers")
-    result = []
-
-    for provider_doc in providers_ref.stream():
-        parsed = parse_provider(provider_doc, include_api_key=False)
-        result.append(parsed)
-
-    return {"providers": result}
 
 
 def log_usage(user_id, provider, model, usage):
