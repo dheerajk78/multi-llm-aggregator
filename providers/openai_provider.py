@@ -2,6 +2,7 @@
 from openai import OpenAI
 from .base_provider import BaseLLMProvider
 from firestore import save_chat, log_usage
+from firestore import db
 
 class OpenAIProvider(BaseLLMProvider):
     def chat(self, user_id, message):
@@ -28,3 +29,19 @@ class OpenAIProvider(BaseLLMProvider):
         save_chat(user_id, message, reply)
 
         return {"reply": reply}
+
+    def get_enabled_models(self):
+          
+
+        models_ref = db.collection("providers").document(self.provider_id).collection("models")
+        models = []
+
+        for doc in models_ref.stream():
+            data = doc.to_dict()
+            if data.get("enabled", False):
+                models.append({
+                    "id": doc.id,
+                    "temperature": data.get("temperature", 1.0)
+                })
+
+        return models
