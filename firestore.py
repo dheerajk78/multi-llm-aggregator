@@ -29,7 +29,6 @@ def get_allowed_providers_and_models():
 
     return {"providers": result}
 
-
 def fetch_provider_document(provider_id):
     """Helper to get provider Firestore document or raise error."""
     provider_ref = db.collection("providers").document(provider_id)
@@ -64,7 +63,32 @@ def get_provider_config(provider_id, include_api_key=True):
     return get_provider(provider_id, provider_data)
 
 
+def parse_provider(provider_doc, include_api_key=False):
+    """Return a dict for UI display of a provider."""
+    data = provider_doc.to_dict()
+    provider_id = provider_doc.id
 
+    models_ref = provider_doc.reference.collection("models")
+    models = []
+    for model_doc in models_ref.stream():
+        model_data = model_doc.to_dict()
+        if model_data.get("enabled", False):
+            models.append({
+                "id": model_doc.id,
+                "temperature": model_data.get("temperature", 1.0),
+            })
+
+    result = {
+        "id": provider_id,
+        "name": data.get("name", provider_id.title()),
+        "default_model": data.get("default_model"),
+        "models": models
+    }
+
+    if include_api_key:
+        result["api_key"] = data.get("api_key")
+
+    return result
 
 
 def get_monthly_usage(provider_id):
