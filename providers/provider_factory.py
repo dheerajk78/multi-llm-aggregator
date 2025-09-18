@@ -14,3 +14,17 @@ def get_provider(provider_id, config):
         return AnthropicProvider(provider_id, api_key, model, temperature)
     else:
         raise ValueError(f"Unsupported provider: {name}")
+
+def get_all_providers(include_api_key=False):
+    """Fetch and instantiate all providers from Firestore."""
+    providers = []
+    providers_ref = db.collection("providers")
+
+    for doc in providers_ref.stream():
+        data = doc.to_dict()
+        if not include_api_key:
+            data.pop("api_key", None)
+        provider = get_provider(doc.id, data)
+        providers.append(provider)
+
+    return providers
