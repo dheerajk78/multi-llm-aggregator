@@ -29,16 +29,34 @@ def get_allowed_providers_and_models():
 
     return {"providers": result}
 
-def get_provider_instance(provider_id):
+def get_provider_instance(provider_id, include_api_key=True):
+    """Returns an instantiated provider class with model info."""
     provider_ref = db.collection("providers").document(provider_id)
     doc = provider_ref.get()
 
     if not doc.exists:
         raise Exception(f"Provider '{provider_id}' not found.")
 
-    config = doc.to_dict()
-    config["id"] = provider_id  # optionally include ID
-    return get_provider(provider_id, config)
+    provider_data = doc.to_dict()
+
+    # ✅ Load models subcollection
+    models_ref = doc.reference.collection("models")
+    models = []
+    for model_doc in models_ref.stream():
+        model_data = model_doc.to_dict()
+        if model_data.get("enabled", False):
+            models.append({
+                "id": model_doc.id,
+                "temperature": model_data.get("temperature", 1.0),
+            })
+    provider_data["models"] = models
+
+    # ✅ Optionally include API key
+    if include_api_key:
+        provider_data["api_key"] = provider_data.get("api_key")
+
+    # ✅ Create provider wrapper instance (OpenAIProvider, etc.)
+    return get_provider(provider_id, provider_data)
 
 def fetch_provider_document(provider_id):
     """Helper to get provider Firestore document or raise error."""
@@ -48,7 +66,7 @@ def fetch_provider_document(provider_id):
         raise Exception(f"Provider '{provider_id}' not found.")
     return provider_doc
 
-def get_provider_config(provider_id, include_api_key=True):
+'''def get_provider_config(provider_id, include_api_key=True):
     """Returns an instantiated provider class (e.g., OpenAIProvider)."""
     doc = fetch_provider_document(provider_id)
     provider_data = doc.to_dict()
@@ -72,7 +90,7 @@ def get_provider_config(provider_id, include_api_key=True):
 
     # Instantiate provider wrapper (OpenAIProvider, etc.)
     return get_provider(provider_id, provider_data)
-
+'''
 
 def parse_provider(provider_doc, include_api_key=False):
     """Return a dict for UI display of a provider."""
