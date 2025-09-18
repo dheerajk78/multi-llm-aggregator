@@ -29,6 +29,17 @@ def get_allowed_providers_and_models():
 
     return {"providers": result}
 
+def get_provider_instance(provider_id):
+    provider_ref = db.collection("providers").document(provider_id)
+    doc = provider_ref.get()
+
+    if not doc.exists:
+        raise Exception(f"Provider '{provider_id}' not found.")
+
+    config = doc.to_dict()
+    config["id"] = provider_id  # optionally include ID
+    return get_provider(provider_id, config)
+
 def fetch_provider_document(provider_id):
     """Helper to get provider Firestore document or raise error."""
     provider_ref = db.collection("providers").document(provider_id)
