@@ -1,7 +1,7 @@
 # routes/api.py
 from flask import Blueprint, request, jsonify
 from .firestore import (
-    fetch_provider_document, parse_provider, get_provider_config, get_allowed_providers_and_models, save_chat, log_usage, get_monthly_usage
+    get_allowed_providers_and_models, get_provider_instance, get_monthly_usage
 )
 from providers.provider_factory import get_provider
 
@@ -27,8 +27,7 @@ def chat():
     user_id = data.get("user_id", "anonymous")
 
     try:
-        config = get_provider_config(provider_id, include_api_key=True)
-        provider = get_provider(provider_id, config)
+        provider = get_provider_instance(provider_id)
         result = provider.chat(user_id=user_id, message=message)
         return jsonify(result)
     except Exception as e:
