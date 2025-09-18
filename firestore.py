@@ -3,8 +3,36 @@ from google.cloud import firestore
 import os
 import requests
 from datetime import datetime, timedelta
+from providers.provider_factory import get_all_providers
 
 db = firestore.Client()
+
+def get_allowed_providers_and_models():
+    providers = get_all_providers(include_api_key=False)
+
+    result = []
+    for provider in providers:
+        models = provider.get_enabled_models()
+
+        result.append({
+            "id": provider.provider_id,
+            "name": provider.name,
+            "default_model": provider.default_model,
+            "models": [
+                {
+                    "id": model["id"],
+                    "temperature": model.get("temperature", 1.0),
+                }
+                for model in models
+            ]
+        })
+
+    return {"providers": result}
+
+
+
+
+
 
 def fetch_provider_document(provider_id):
     """Helper to get provider Firestore document or raise error."""
