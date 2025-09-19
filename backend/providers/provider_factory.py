@@ -13,11 +13,12 @@ def get_provider(provider_id, config):
     temperature = config.get("temperature", 0.7)
 
     if name == "openai":
-        return OpenAIProvider(api_key=api_key, model=model, temperature=temperature)
+        return OpenAIProvider(provider_id=provider_id, api_key=api_key, model=model, temperature=temperature)
     elif name == "anthropic":
-        return AnthropicProvider(api_key=api_key, model=model, temperature=temperature)
+        return AnthropicProvider(provider_id=provider_id, api_key=api_key, model=model, temperature=temperature)
     else:
         raise ValueError(f"Unsupported provider: {name}")
+
 
 def get_all_providers(include_api_key=False):
     """
