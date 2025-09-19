@@ -5,6 +5,7 @@ from firestore.firestore import save_chat, log_usage, db
 
 class OpenAIProvider(BaseLLMProvider):
     def chat(self, user_id, message):
+        from firestore.firestore import save_chat, log_usage, db
         client = OpenAI(api_key=self.api_key)
         response = client.chat.completions.create(
             model=self.model,
@@ -25,6 +26,7 @@ class OpenAIProvider(BaseLLMProvider):
         return {"reply": reply}
 
     def get_enabled_models(self): 
+        from firestore.firestore import save_chat, log_usage, db
         models_ref = db.collection("providers").document(self.provider_id).collection("models")
         models = []
 
