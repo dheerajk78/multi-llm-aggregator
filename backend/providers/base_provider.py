@@ -7,6 +7,7 @@ class BaseLLMProvider(ABC):
         self.api_key = api_key
         self.model = model
         self.temperature = temperature
+        self.name = provider_id.capitalize()
 
     @abstractmethod
     def chat(self, user_id: str, message: str) -> dict:
