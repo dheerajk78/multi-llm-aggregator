@@ -1,9 +1,9 @@
 # routes/api.py
 from flask import Blueprint, request, jsonify
-from backend.firestore.firestore import (
+from firestore.firestore import (
     get_allowed_providers_and_models, get_provider_instance, get_monthly_usage
 )
-from backend.providers.provider_factory import get_provider
+from providers.provider_factory import get_provider
 
 api_bp = Blueprint("api", __name__)
 @api_bp.route("/models", methods=["GET"])
