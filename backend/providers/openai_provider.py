@@ -23,7 +23,7 @@ class OpenAIProvider(BaseLLMProvider):
                 stream_options={"include_usage": True}
             )
     
-            for event in stream:
+            for event in response:
             # Each event can be a delta
                 if event.type == "response.output_text.delta":
                     delta = event.delta
