@@ -24,10 +24,18 @@ def chat():
     data = request.get_json()
     provider_id = data.get("provider")
     message = data.get("message")
+    model = data.get("model")
     user_id = data.get("user_id", "anonymous")
 
     try:
         provider = get_provider_instance(provider_id)
+        if model:
+            provider.set_model(model)
+        elif provider.default_model:
+            provider.set_model(provider.default_model)
+        else:
+            return jsonify({"error": "No model available"}), 400
+
         result = provider.chat(user_id=user_id, message=message)
         return jsonify(result)
     except Exception as e:
