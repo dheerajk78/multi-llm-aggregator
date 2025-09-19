@@ -1,7 +1,7 @@
 # providers/provider_factory.py
-from .openai_provider import OpenAIProvider
-from .anthropic_provider import AnthropicProvider
-from firestore.firestore import db
+from providers.openai_provider import OpenAIProvider
+from providers.anthropic_provider import AnthropicProvider
+
 
 def get_provider(provider_id, config):
     name = config.get("name", "").lower()
@@ -17,7 +17,7 @@ def get_provider(provider_id, config):
         raise ValueError(f"Unsupported provider: {name}")
 
 def get_all_providers(include_api_key=False):
-    
+    from firestore.firestore import db
     """Fetch and instantiate all providers from Firestore."""
     providers = []
     providers_ref = db.collection("providers")
