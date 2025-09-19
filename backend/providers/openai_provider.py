@@ -9,38 +9,41 @@ class OpenAIProvider(BaseLLMProvider):
         Yields each chunk of text for progressive streaming.
         """
         from firestore.firestore import save_chat, log_usage
-
         client = OpenAI(api_key=self.api_key)
         full_text = ""
-
-        response = client.chat.completions.stream(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": message},
-            ],
-            temperature=self.temperature,
-        )
-
-        for event in response:
-            if event.type == "response.output_text.delta":
-                delta = event.delta
-                full_text += delta
-                yield delta  # stream chunk
-
-        # Log chat and token usage after full response
-        save_chat(user_id, message, full_text)
-        if hasattr(response, "usage") and response.usage:
-            log_usage(
-                user_id,
-                self.provider_id,
-                self.model,
-                {
-                    "prompt_tokens": response.usage.prompt_tokens,
-                    "completion_tokens": response.usage.completion_tokens,
-                    "total_tokens": response.usage.total_tokens,
-                },
+    
+        try:
+            response = client.chat.completions.stream(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": message},
+                ],
+                temperature=self.temperature,
+                stream_options={"include_usage": True}
             )
+    
+            for chunk in response:
+                delta = chunk['choices'][0].get('delta', {}).get('content')
+                if delta:
+                    full_text += delta
+                    yield delta
+    
+            # Log chat and token usage after full response
+            save_chat(user_id, message, full_text)
+            if hasattr(response, "usage") and response.usage:
+                log_usage(
+                    user_id,
+                    self.provider_id,
+                    self.model,
+                    {
+                        "prompt_tokens": response.usage.prompt_tokens,
+                        "completion_tokens": response.usage.completion_tokens,
+                        "total_tokens": response.usage.total_tokens,
+                    },
+                )
+        except Exception as e:
+            yield f"\n[Error: {str(e)}]"
     '''
     def chat(self, user_id, message):
         from firestore.firestore import save_chat, log_usage, db
