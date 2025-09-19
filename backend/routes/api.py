@@ -1,5 +1,5 @@
 # routes/api.py
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, Response
 from firestore.firestore import (
     get_allowed_providers_and_models, get_provider_instance, get_monthly_usage
 )
@@ -48,6 +48,6 @@ def chat():
                 traceback.print_exc(file=sys.stdout)
                 sys.stdout.flush()  # ensure it appears in logs
                 yield f"\n[Error: {str(e)}]"
-        return Response(generate(), content_type="text/plain")
+        return Response(generate(), mimetype="text/plain")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
