@@ -3,7 +3,7 @@ from google.cloud import firestore
 import os
 import requests
 from datetime import datetime, timedelta
-from backend.providers.provider_factory import get_all_providers
+from providers.provider_factory import get_all_providers
 
 db = firestore.Client()
 
