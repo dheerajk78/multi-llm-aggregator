@@ -167,7 +167,7 @@ def log_usage(user_id, provider, model, usage):
         "prompt_tokens": usage.get("prompt_tokens", 0),
         "completion_tokens": usage.get("completion_tokens", 0),
         "total_tokens": usage.get("total_tokens", 0),
-        "timestamp": datetime.utcnow()
+        "timestamp": datetime.utcnow().isoformat()
     })
 
 def save_chat(user_id, user_msg, bot_msg):
