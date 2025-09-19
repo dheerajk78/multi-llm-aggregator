@@ -13,7 +13,7 @@ class OpenAIProvider(BaseLLMProvider):
         full_text = ""
     
         try:
-            response = client.chat.completions.stream(
+            response = client.chat.completions.stream_sync(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
