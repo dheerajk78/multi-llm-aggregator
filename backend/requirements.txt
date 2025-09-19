@@ -1,0 +1,5 @@
+Flask
+Flask-Cors
+openai>=1.0.0
+google-cloud-firestore
+anthropic  # Optional
