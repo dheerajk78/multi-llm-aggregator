@@ -4,7 +4,6 @@ from flask_cors import CORS
 from routes.api import api_bp
 import os
 
-
 def create_app():
     app = Flask(__name__)
 
