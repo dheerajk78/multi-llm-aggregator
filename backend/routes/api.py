@@ -37,6 +37,6 @@ def chat():
             return jsonify({"error": "No model available"}), 400
 
         # Stream via provider.chat() generator
-        return Response(provider.chat(user_id, user_msg), content_type="text/plain")
+        return Response(provider.chat(user_id=user_id, message=message), content_type="text/plain")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
