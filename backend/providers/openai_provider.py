@@ -1,7 +1,7 @@
 # providers/openai_provider.py
 from openai import OpenAI
 from .base_provider import BaseLLMProvider
-from backend.firestore.firestore import save_chat, log_usage, db
+from firestore.firestore import save_chat, log_usage, db
 
 class OpenAIProvider(BaseLLMProvider):
     def chat(self, user_id, message):
