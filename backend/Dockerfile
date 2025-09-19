@@ -20,4 +20,4 @@ EXPOSE 8080
 
 # Use Gunicorn to run the Flask app
 # "app:app" means the Flask app is exposed as `app = create_app()` in app.py
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "backend.app:app"]
