@@ -1,10 +1,11 @@
 # providers/anthropic_provider.py
-from .base_provider import BaseLLMProvider
-from firestore.firestore import save_chat, log_usage
+from providers.base_provider import BaseLLMProvider
+
 import anthropic
 
 class AnthropicProvider(BaseLLMProvider):
     def chat(self, user_id, message):
+        from firestore.firestore import save_chat, log_usage
         client = anthropic.Anthropic(api_key=self.api_key)
 
         response = client.messages.create(
