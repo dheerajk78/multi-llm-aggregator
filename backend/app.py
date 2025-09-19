@@ -9,9 +9,14 @@ def create_app():
 
     # CORS setup
     frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
+    allowed_origins = [
+        frontend_origin,
+        "http://localhost:3000",   # for local React dev
+        "http://127.0.0.1:3000",   # sometimes React runs here
+    ]
     CORS(app, resources={
         r"/api/*": {
-            "origins": [frontend_origin],
+            "origins": [allowed_origins],
             "methods": ["GET", "POST"],
             "allow_headers": ["Content-Type", "Authorization"],
             "max_age": 3600
