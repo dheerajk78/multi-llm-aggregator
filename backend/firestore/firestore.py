@@ -3,11 +3,12 @@ from google.cloud import firestore
 import os
 import requests
 from datetime import datetime, timedelta
-from providers.provider_factory import get_all_providers
+
 
 db = firestore.Client()
 
 def get_allowed_providers_and_models():
+    from providers.provider_factory import get_all_providers
     providers = get_all_providers(include_api_key=False)
 
     result = []
