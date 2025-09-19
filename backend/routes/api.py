@@ -27,7 +27,8 @@ def chat():
     user_id = data.get("user_id", "anonymous")
 
     try:
-        provider = get_provider_instance(provider_id)
+        #provider = get_provider_instance(provider_id)
+        provider = get_provider(provider_id,data)
         result = provider.chat(user_id=user_id, message=message)
         return jsonify(result)
     except Exception as e:
