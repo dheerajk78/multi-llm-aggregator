@@ -37,6 +37,17 @@ def chat():
             return jsonify({"error": "No model available"}), 400
 
         # Stream via provider.chat() generator
-        return Response(provider.chat(user_id=user_id, message=message), content_type="text/plain")
+        #return Response(provider.chat(user_id=user_id, message=message), content_type="text/plain")
+        # Streaming generator
+        def generate():
+            try:
+                for chunk in provider.chat(user_id=user_id, message=message):
+                    yield chunk
+            except Exception as e:
+                # Print full traceback to Cloud Run logs
+                traceback.print_exc(file=sys.stdout)
+                sys.stdout.flush()  # ensure it appears in logs
+                yield f"\n[Error: {str(e)}]"
+        return Response(generate(), content_type="text/plain")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
