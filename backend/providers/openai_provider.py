@@ -1,11 +1,11 @@
-# providers/openai_provider.py
+#providers/openai_provider.py
 from openai import OpenAI
 from providers.base_provider import BaseLLMProvider
-
 
 class OpenAIProvider(BaseLLMProvider):
     def chat(self, user_id, message):
         from firestore.firestore import save_chat, log_usage, db
+
         client = OpenAI(api_key=self.api_key)
         response = client.chat.completions.create(
             model=self.model,
@@ -15,18 +15,21 @@ class OpenAIProvider(BaseLLMProvider):
                 {"role": "user", "content": message}
             ]
         )
+
         reply = response.choices[0].message.content
+
         if response.usage:
             log_usage(user_id, self.provider_id, self.model, {
                 "prompt_tokens": response.usage.prompt_tokens,
                 "completion_tokens": response.usage.completion_tokens,
                 "total_tokens": response.usage.total_tokens
             })
+
         save_chat(user_id, message, reply)
         return {"reply": reply}
 
-    def get_enabled_models(self): 
-        from firestore.firestore import save_chat, log_usage, db
+    def get_enabled_models(self):
+        from firestore.firestore import db
         models_ref = db.collection("providers").document(self.provider_id).collection("models")
         models = []
 
@@ -35,6 +38,6 @@ class OpenAIProvider(BaseLLMProvider):
             if data.get("enabled", False):
                 models.append({
                     "id": doc.id,
-                    "temperature": data.get("temperature", 1.0)
+                    "temperature": data.get("temperature", self.temperature)
                 })
         return models
