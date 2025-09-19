@@ -23,12 +23,12 @@ class OpenAIProvider(BaseLLMProvider):
                 stream_options={"include_usage": True}
             )
     
-            for chunk in response:
-                if chunk['choices'][0]['finish_reason'] is not None:
-                    break
-                delta = chunk['choices'][0]['delta'].get('content', '')
-                full_text += delta
-                yield delta  # Streaming chunk
+            for event in stream:
+            # Each event can be a delta
+                if event.type == "response.output_text.delta":
+                    delta = event.delta
+                    full_text += delta
+                    yield delta  # send chunk to client
     
             # Log chat and token usage after full response
             save_chat(user_id, message, full_text)
