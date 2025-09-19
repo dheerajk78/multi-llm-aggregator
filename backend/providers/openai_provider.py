@@ -13,7 +13,7 @@ class OpenAIProvider(BaseLLMProvider):
         full_text = ""
     
         try:
-            response = client.chat.completions.stream_sync(
+            response = client.chat.completions.stream(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
@@ -23,11 +23,12 @@ class OpenAIProvider(BaseLLMProvider):
                 stream_options={"include_usage": True}
             )
     
-            for event in response:  # do NOT call .events()
-                if event.type == "response.output_text.delta":
-                    delta = event.delta
-                    full_text += delta
-                    yield delta  # streaming chunk
+            for chunk in response:
+                if chunk['choices'][0]['finish_reason'] is not None:
+                    break
+                delta = chunk['choices'][0]['delta'].get('content', '')
+                full_text += delta
+                yield delta  # Streaming chunk
     
             # Log chat and token usage after full response
             save_chat(user_id, message, full_text)
