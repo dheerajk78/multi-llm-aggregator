@@ -3,19 +3,17 @@ from providers.openai_provider import OpenAIProvider
 from providers.anthropic_provider import AnthropicProvider
 
 def get_provider(provider_id, config):
-    """
-    Instantiate a provider object from Firestore config.
-    The Firestore 'default_model' is used for dropdown initialization.
-    """
     name = config.get("name", "").lower()
     api_key = config.get("api_key")
-    model = config.get("default_model")  # Firestore default model
+    default_model = config.get("default_model")
     temperature = config.get("temperature", 0.7)
 
     if name == "openai":
-        return OpenAIProvider(provider_id=provider_id, api_key=api_key, model=model, temperature=temperature)
+        return OpenAIProvider(provider_id=provider_id, api_key=api_key,
+                              default_model=default_model, temperature=temperature)
     elif name == "anthropic":
-        return AnthropicProvider(provider_id=provider_id, api_key=api_key, model=model, temperature=temperature)
+        return AnthropicProvider(provider_id=provider_id, api_key=api_key,
+                                 default_model=default_model, temperature=temperature)
     else:
         raise ValueError(f"Unsupported provider: {name}")
 
