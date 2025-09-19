@@ -23,12 +23,11 @@ class OpenAIProvider(BaseLLMProvider):
                 stream_options={"include_usage": True}
             )
     
-            for event in response.events():  # <- use .events() here
+            for event in response:  # do NOT call .events()
                 if event.type == "response.output_text.delta":
                     delta = event.delta
                     full_text += delta
-                    yield delta
-
+                    yield delta  # streaming chunk
     
             # Log chat and token usage after full response
             save_chat(user_id, message, full_text)
