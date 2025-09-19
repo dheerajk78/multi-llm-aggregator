@@ -31,6 +31,7 @@ def get_allowed_providers_and_models():
     return {"providers": result}
 
 def get_provider_instance(provider_id, include_api_key=True):
+    from providers.provider_factory import get_provider
     """Returns an instantiated provider class with model info."""
     provider_ref = db.collection("providers").document(provider_id)
     doc = provider_ref.get()
