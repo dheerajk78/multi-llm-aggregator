@@ -1,6 +1,6 @@
 # providers/anthropic_provider.py
 from .base_provider import BaseLLMProvider
-from backend.firestore.firestore import save_chat, log_usage
+from firestore.firestore import save_chat, log_usage
 import anthropic
 
 class AnthropicProvider(BaseLLMProvider):
