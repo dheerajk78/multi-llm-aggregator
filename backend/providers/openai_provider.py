@@ -19,8 +19,7 @@ class OpenAIProvider(BaseLLMProvider):
                     {"role": "system", "content": "You are a helpful assistant."},
                     {"role": "user", "content": message},
                 ],
-                temperature=self.temperature,
-                stream_options={"include_usage": True}
+                temperature=self.temperature
             )
     
             # Extract text
