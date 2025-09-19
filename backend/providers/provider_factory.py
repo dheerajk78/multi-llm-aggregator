@@ -1,7 +1,7 @@
 # providers/provider_factory.py
 from .openai_provider import OpenAIProvider
 from .anthropic_provider import AnthropicProvider
-from firestore import db
+from backend.firestore.firestore import db
 
 def get_provider(provider_id, config):
     name = config.get("name", "").lower()
