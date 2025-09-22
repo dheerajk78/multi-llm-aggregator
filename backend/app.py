@@ -20,6 +20,7 @@ def create_app():
             "methods": ["GET", "POST"],
             "allow_headers": ["Content-Type", "Authorization"],
             "max_age": 3600
+            "supports_credentials": True
         }
     })
 
