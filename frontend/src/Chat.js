@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 const API_BASE = process.env.REACT_APP_API_BASE || "";
 
-function Chat() {
+function Chat({ currentUser }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [providers, setProviders] = useState([]);
@@ -18,7 +18,6 @@ function Chat() {
         const data = await res.json();
         setProviders(data.providers || []);
 
-        // Default to first provider + its default model
         if (data.providers.length > 0) {
           setSelectedProvider(data.providers[0].id);
           setSelectedModel(data.providers[0].default_model);
@@ -34,7 +33,7 @@ function Chat() {
     if (selectedProvider) {
       loadUsageStats(selectedProvider);
     }
-  }, [selectedProvider]); 
+  }, [selectedProvider]);
 
   const loadUsageStats = async (providerId) => {
     try {
@@ -63,11 +62,12 @@ function Chat() {
       const response = await fetch(`${API_BASE}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // if using Flask session cookies
         body: JSON.stringify({
           provider: selectedProvider,
           model: selectedModel,
           message: input,
-          user_id: user || "test-user",
+          user_id: currentUser || "test-user",
         }),
       });
 
@@ -77,6 +77,11 @@ function Chat() {
       loadUsageStats(selectedProvider);
     } catch (err) {
       console.error("Error sending message:", err);
+      const errorMessage = {
+        role: "assistant",
+        content: `❌ Network error: ${err.message}`,
+      };
+      setMessages((prev) => [...prev, errorMessage]);
     }
 
     setInput("");
@@ -95,7 +100,6 @@ function Chat() {
             value={selectedProvider}
             onChange={(e) => {
               setSelectedProvider(e.target.value);
-              // reset model when provider changes
               const prov = providers.find((p) => p.id === e.target.value);
               if (prov) setSelectedModel(prov.default_model);
             }}
@@ -145,7 +149,7 @@ function Chat() {
       </div>
 
       {/* Input box */}
-      <div className="input-group">
+      <div className="input-group mb-2">
         <input
           type="text"
           className="form-control"
@@ -158,13 +162,14 @@ function Chat() {
           Send
         </button>
       </div>
+
+      {/* Usage stats */}
       <div className="mt-2 p-2 bg-light border rounded" id="usage-box">
-       {usage || "Loading usage stats..."}
+        {usage || "Loading usage stats..."}
       </div>
     </div>
   );
 }
-
 
 export default Chat;
 
