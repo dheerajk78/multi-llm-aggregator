@@ -43,7 +43,7 @@ jobs:
         run: npm install
 
       - name: Build React app
-        working-directory: ./frontendi
+        working-directory: ./frontend
         run: npm run build
 
       - name: Build and push Docker image with tag ${{ env.IMAGE_TAG }}
