@@ -22,6 +22,14 @@ def create_app():
             "max_age": 3600
             "supports_credentials": True
         }
+
+        r"/auth/*": {
+            "origins": allowed_origins,
+            "methods": ["GET", "POST"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "max_age": 3600
+            "supports_credentials": True
+        }
     })
 
     # Register routes
