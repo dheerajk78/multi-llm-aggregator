@@ -34,12 +34,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
       # 3. Install deps + build React
       - name: Install dependencies
+        working-directory: ./frontend
         run: npm install
 
       - name: Build React app
+        working-directory: ./frontendi
         run: npm run build
 
       - name: Build and push Docker image with tag ${{ env.IMAGE_TAG }}
