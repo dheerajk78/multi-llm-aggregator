@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import Chat from "./Chat";
+import Login from "./Login";
 
 function App() {
-  return <Chat />;
+  const [user, setUser] = useState(null);
+
+  return (
+    <div>
+      {!user ? (
+        <Login onLogin={setUser} />
+      ) : (
+        <Chat user={user} />
+      )}
+    </div>
+  );
 }
 
 export default App;
+

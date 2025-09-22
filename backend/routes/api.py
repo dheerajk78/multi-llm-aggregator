@@ -1,5 +1,6 @@
 # routes/api.py
 from flask import Blueprint, request, jsonify, Response
+from routes.auth import login_required
 from firestore.firestore import (
     get_allowed_providers_and_models, get_provider_instance, get_monthly_usage
 )
@@ -20,6 +21,7 @@ def get_usage():
     return get_monthly_usage(provider_id)
 
 @api_bp.route("/chat", methods=["POST"])
+@login_required
 def chat():
     data = request.get_json()
     provider_id = data.get("provider")

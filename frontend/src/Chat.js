@@ -67,7 +67,7 @@ function Chat() {
           provider: selectedProvider,
           model: selectedModel,
           message: input,
-          user_id: "test-user",
+          user_id: user || "test-user",
         }),
       });
 
