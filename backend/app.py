@@ -17,17 +17,17 @@ def create_app():
     CORS(app, resources={
         r"/api/*": {
             "origins": allowed_origins,
-            "methods": ["GET", "POST"],
+            "methods": ["GET", "POST","OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
-            "max_age": 3600
+            "max_age": 3600,
             "supports_credentials": True
         }
 
         r"/auth/*": {
             "origins": allowed_origins,
-            "methods": ["GET", "POST"],
+            "methods": ["GET", "POST","OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
-            "max_age": 3600
+            "max_age": 3600,
             "supports_credentials": True
         }
     })
