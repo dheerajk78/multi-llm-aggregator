@@ -61,8 +61,7 @@ function Chat({ currentUser }) {
     try {
       const response = await fetch(`${API_BASE}/api/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // if using Flask session cookies
+        headers: { "Content-Type": "application/json","Authorization": `Bearer ${token}` },
         body: JSON.stringify({
           provider: selectedProvider,
           model: selectedModel,

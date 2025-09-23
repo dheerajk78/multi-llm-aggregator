@@ -1,8 +1,26 @@
 # backend/auth.py
 from flask import Blueprint, request, session, jsonify, current_app
 from functools import wraps
+import jwt
+import datetime
 
 auth_bp = Blueprint("auth", __name__)
+# Helper: JWT decorator
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get("Authorization", "").replace("Bearer ", "")
+        if not token:
+            return jsonify({"error": "Unauthorized"}), 401
+        try:
+            payload = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
+            request.user = payload["user"]
+        except jwt.ExpiredSignatureError:
+            return jsonify({"error": "Token expired"}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"error": "Invalid token"}), 401
+        return f(*args, **kwargs)
+    return decorated
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
@@ -14,8 +32,12 @@ def login():
     password = data.get("password")
 
     if username == valid_username and password == valid_password:
-        session["user"] = username
-        return jsonify({"success": True, "user": username})
+        # Create JWT token valid for 1 hour
+        token = jwt.encode({
+            "user": username,
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+        }, current_app.config["SECRET_KEY"], algorithm="HS256")
+        return jsonify({"success": True, "token": token})
     return jsonify({"success": False, "error": "Invalid credentials"}), 401
 
 @auth_bp.route("/logout", methods=["POST"])
@@ -31,4 +53,5 @@ def login_required(f):
             return jsonify({"error": "Unauthorized"}), 401
         return f(*args, **kwargs)
     return decorated_function
+
 

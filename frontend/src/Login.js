@@ -13,13 +13,13 @@ function Login({ onLogin }) {
       const res = await fetch(`${process.env.REACT_APP_API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // 🔑 important for Flask session cookies
         body: JSON.stringify({ username, password }),
       });
 
       const data = await res.json();
       if (data.success) {
-        onLogin(data.user);
+	#onLogin(data.user);
+        localStorage.setItem("token", data.token); // save JWT
       } else {
         setError(data.error || "Login failed");
       }

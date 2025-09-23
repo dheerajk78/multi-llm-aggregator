@@ -1,6 +1,6 @@
 # routes/api.py
 from flask import Blueprint, request, jsonify, Response
-from routes.auth import login_required
+from routes.auth import token_required
 from firestore.firestore import (
     get_allowed_providers_and_models, get_provider_instance, get_monthly_usage
 )
@@ -21,13 +21,14 @@ def get_usage():
     return get_monthly_usage(provider_id)
 
 @api_bp.route("/chat", methods=["POST"])
-@login_required
+@token_required
 def chat():
     data = request.get_json()
     provider_id = data.get("provider")
     message = data.get("message")
     model = data.get("model")
-    user_id = data.get("user_id", "anonymous")
+    #user_id = data.get("user_id", "anonymous")
+    user_id = getattr(request, "user", "anonymous")  # comes from JWT
 
     try:
         provider = get_provider_instance(provider_id)
