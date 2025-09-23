@@ -49,10 +49,13 @@ def get_provider_instance(provider_id, model_id=None, include_api_key=True):
 
         provider_data["default_model"] = model_id
         provider_data["temperature"] = model_data.get("temperature", provider_data.get("temperature", 0.7))
+        provider_data["max_tokens"] = model_data.get("max_tokens", provider_data.get("max_tokens", 512)
+        )
     else:
         # fallback: use provider-level defaults
         provider_data["default_model"] = provider_data.get("default_model")
         provider_data["temperature"] = provider_data.get("temperature", 0.7)
+        provider_data["max_tokens"] = provider_data.get("max_tokens", 512)
 
     # ✅ Optionally include API key
     if include_api_key:

@@ -10,9 +10,9 @@ class AnthropicProvider(BaseLLMProvider):
             response = client.messages.create(
                 model=self.model,
                 temperature=self.temperature,
+                max_tokens=self.max_tokens 
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": message}
+                    {"role": "user", "message": message}
                 ]
             )
 
