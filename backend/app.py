@@ -12,6 +12,12 @@ def create_app():
     # Load credentials from environment (Cloud Run secrets or local env vars)
     app.config["USERNAME"] = os.getenv("USERNAME", "admin")
     app.config["PASSWORD"] = os.getenv("PASSWORD", "password")
+    
+    # Session cookie config for cross-origin
+    app.config.update(
+        SESSION_COOKIE_SAMESITE="None",  # allow cross-site cookies
+        SESSION_COOKIE_SECURE=True       # required if using HTTPS (Cloud Run)
+    )
 
     # CORS setup
     frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
