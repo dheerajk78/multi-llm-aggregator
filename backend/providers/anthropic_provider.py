@@ -1,29 +1,50 @@
 # providers/anthropic_provider.py
+from anthropic import Anthropic
 from providers.base_provider import BaseLLMProvider
-
-import anthropic
+from firestore.firestore import save_chat, log_usage, db
 
 class AnthropicProvider(BaseLLMProvider):
     def chat(self, user_id, message):
-        from firestore.firestore import save_chat, log_usage
-        client = anthropic.Anthropic(api_key=self.api_key)
+        try:
+            client = Anthropic(api_key=self.api_key)
+            response = client.messages.create(
+                model=self.model,
+                temperature=self.temperature,
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": message}
+                ]
+            )
 
-        response = client.messages.create(
-            model=self.model,
-            max_tokens=1024,
-            temperature=self.temperature,
-            messages=[{"role": "user", "content": message}]
-        )
+            # Anthropic responses come as list of content blocks
+            reply = ""
+            if response.content and len(response.content) > 0:
+                reply = response.content[0].text.strip()
 
-        reply = response.content[0].text
+            if hasattr(response, "usage") and response.usage:
+                log_usage(user_id, self.provider_id, self.model, {
+                    "prompt_tokens": response.usage.input_tokens,
+                    "completion_tokens": response.usage.output_tokens,
+                    "total_tokens": response.usage.input_tokens + response.usage.output_tokens
+                })
 
-        # Simulated usage logging (Anthropic doesn't always return usage)
-        log_usage(user_id, self.provider_id, self.model, {
-            "prompt_tokens": 100,
-            "completion_tokens": 500,
-            "total_tokens": 600
-        })
+            save_chat(user_id, message, reply)
+            return {"reply": reply}
 
-        save_chat(user_id, message, reply)
+        except Exception as e:
+            # structured error response
+            return {"reply": f"❌ Error: {str(e)}"}
 
-        return {"reply": reply}
+    def get_enabled_models(self):
+        models_ref = db.collection("providers").document(self.provider_id).collection("models")
+        models = []
+
+        for doc in models_ref.stream():
+            data = doc.to_dict()
+            if data.get("enabled", False):
+                models.append({
+                    "id": doc.id,
+                    "temperature": data.get("temperature", self.temperature)
+                })
+        return models
+
