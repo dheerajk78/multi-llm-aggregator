@@ -8,6 +8,11 @@ def create_app():
     app = Flask(__name__)
 
     app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev_secret_key")
+
+    # Load credentials from environment (Cloud Run secrets or local env vars)
+    app.config["USERNAME"] = os.getenv("USERNAME", "admin")
+    app.config["PASSWORD"] = os.getenv("PASSWORD", "password")
+
     # CORS setup
     frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
     allowed_origins = [
