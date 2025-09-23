@@ -59,6 +59,7 @@ function Chat({ currentUser }) {
     setMessages((prev) => [...prev, userMessage]);
 
     try {
+      const token = localStorage.getItem("token")
       const response = await fetch(`${API_BASE}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json","Authorization": `Bearer ${token}` },
