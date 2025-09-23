@@ -15,6 +15,7 @@ def create_app():
     
     # Session cookie config for cross-origin
     app.config.update(
+        SESSION_COOKIE_NAME="session",
         SESSION_COOKIE_SAMESITE="None",  # allow cross-site cookies
         SESSION_COOKIE_SECURE=True       # required if using HTTPS (Cloud Run)
     )
