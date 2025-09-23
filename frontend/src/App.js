@@ -15,7 +15,7 @@ function App() {
   return (
     <>
       {!loggedIn ? (
-        <Login onLoginSuccess={handleLogin} />
+        <Login onLogin={handleLogin} />
       ) : (
         <Chat token={token} />
       )}

@@ -19,6 +19,7 @@ function Login({ onLogin }) {
       const data = await res.json();
       if (data.success) {
         localStorage.setItem("token", data.token); // save JWT
+	onLogin(data.token);  // 🔑 tell App.js we're logged in 
       } else {
         setError(data.error || "Login failed");
       }
