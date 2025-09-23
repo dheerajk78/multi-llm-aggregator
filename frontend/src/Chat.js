@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 const API_BASE = process.env.REACT_APP_API_BASE || "";
 
-function Chat({ currentUser }) {
+function Chat({ token, currentUser, onLogout }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [providers, setProviders] = useState([]);
