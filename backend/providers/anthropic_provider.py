@@ -12,7 +12,7 @@ class AnthropicProvider(BaseLLMProvider):
                 temperature=self.temperature,
                 max_tokens=self.max_tokens,
                 system="You are a helpful assistant.",
-                messages=[{"role": "user", "content": [{"type": "text", "text": message}]}
+                messages=[{"role": "user", "content": [{"type": "text", "text": message}]}]
             )
 
             # Anthropic responses come as list of content blocks
