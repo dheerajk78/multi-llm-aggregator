@@ -27,17 +27,12 @@ def chat():
     provider_id = data.get("provider")
     message = data.get("message")
     model = data.get("model")
-    #user_id = data.get("user_id", "anonymous")
     user_id = getattr(request, "user", "anonymous")  # comes from JWT
 
+    if not provider_id or not message:
+        return jsonify({"error": "Missing provider or message"}), 400
+
     try:
-        '''provider = get_provider_instance(provider_id)
-        if model:
-            provider.set_model(model)
-        elif provider.default_model:
-            provider.set_model(provider.default_model)
-        else:
-            return jsonify({"error": "No model available"}), 400'''
         provider = get_provider_instance(provider_id, model_id=model) 
         result = provider.chat(user_id=user_id, message=message)
         return jsonify(result)
