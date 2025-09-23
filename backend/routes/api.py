@@ -31,14 +31,14 @@ def chat():
     user_id = getattr(request, "user", "anonymous")  # comes from JWT
 
     try:
-        provider = get_provider_instance(provider_id)
+        '''provider = get_provider_instance(provider_id)
         if model:
             provider.set_model(model)
         elif provider.default_model:
             provider.set_model(provider.default_model)
         else:
-            return jsonify({"error": "No model available"}), 400
-
+            return jsonify({"error": "No model available"}), 400'''
+        provider = get_provider_instance(provider_id, model_id=model_id) 
         result = provider.chat(user_id=user_id, message=message)
         return jsonify(result)
     except Exception as e:

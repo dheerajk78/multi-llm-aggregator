@@ -29,7 +29,38 @@ def get_allowed_providers_and_models():
         })
 
     return {"providers": result}
+def get_provider_instance(provider_id, model_id=None, include_api_key=True):
+    from providers.provider_factory import get_provider
 
+    provider_ref = db.collection("providers").document(provider_id)
+    doc = provider_ref.get()
+    if not doc.exists:
+        raise Exception(f"Provider '{provider_id}' not found.")
+
+    provider_data = doc.to_dict()
+
+    # ✅ If model is specified, fetch its config
+    if model_id:
+        model_ref = provider_ref.collection("models").document(model_id)
+        model_doc = model_ref.get()
+        if not model_doc.exists:
+            raise Exception(f"Model '{model_id}' not found under provider '{provider_id}'.")
+        model_data = model_doc.to_dict()
+
+        provider_data["default_model"] = model_id
+        provider_data["temperature"] = model_data.get("temperature", provider_data.get("temperature", 0.7))
+    else:
+        # fallback: use provider-level defaults
+        provider_data["default_model"] = provider_data.get("default_model")
+        provider_data["temperature"] = provider_data.get("temperature", 0.7)
+
+    # ✅ Optionally include API key
+    if include_api_key:
+        provider_data["api_key"] = provider_data.get("api_key")
+
+    return get_provider(provider_id, provider_data)
+
+'''
 def get_provider_instance(provider_id, include_api_key=True):
     from providers.provider_factory import get_provider
     """Returns an instantiated provider class with model info."""
@@ -59,7 +90,7 @@ def get_provider_instance(provider_id, include_api_key=True):
 
     # ✅ Create provider wrapper instance (OpenAIProvider, etc.)
     return get_provider(provider_id, provider_data)
-
+'''
 def fetch_provider_document(provider_id):
     """Helper to get provider Firestore document or raise error."""
     provider_ref = db.collection("providers").document(provider_id)
