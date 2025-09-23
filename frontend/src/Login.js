@@ -18,8 +18,9 @@ function Login({ onLogin }) {
 
       const data = await res.json();
       if (data.success) {
-	#onLogin(data.user);
         localStorage.setItem("token", data.token); // save JWT
+	// Redirect to Chat page / show chat component
+        setLoggedIn(true); // React state to conditionally render Chat component 
       } else {
         setError(data.error || "Login failed");
       }

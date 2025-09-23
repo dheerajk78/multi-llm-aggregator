@@ -3,16 +3,23 @@ import Chat from "./Chat";
 import Login from "./Login";
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [token, setToken] = useState(null);
+
+  const handleLogin = (jwt) => {
+    localStorage.setItem("token", jwt);
+    setToken(jwt);
+    setLoggedIn(true); // explicitly mark user as logged in
+  };
 
   return (
-    <div>
-      {!user ? (
-        <Login onLogin={setUser} />
+    <>
+      {!loggedIn ? (
+        <LoginForm onLoginSuccess={handleLogin} />
       ) : (
-        <Chat user={user} />
+        <Chat token={token} />
       )}
-    </div>
+    </>
   );
 }
 
