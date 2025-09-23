@@ -90,7 +90,9 @@ function Chat({ currentUser }) {
   return (
     <div className="container mt-4" style={{ maxWidth: "700px" }}>
       <h3 className="text-center mb-4">Chat Assistant</h3>
-
+<button className="btn btn-outline-danger btn-sm" onClick={onLogout}>
+          Logout
+        </button>
       {/* Provider + Model selection */}
       <div className="row mb-3">
         <div className="col">
