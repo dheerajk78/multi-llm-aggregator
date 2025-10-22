@@ -67,7 +67,7 @@ function Chat({ token, currentUser, onLogout }) {
           provider: selectedProvider,
           model: selectedModel,
           message: input,
-          user_id: ${currentUser} || "test-user",
+          user_id: `${currentUser}` || "test-user",
         }),
       });
 
