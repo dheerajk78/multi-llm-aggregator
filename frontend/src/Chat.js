@@ -12,6 +12,8 @@ function Chat({ token, currentUser, onLogout }) {
 
   // Fetch providers + models from backend
   useEffect(() => {
+    console.log("🔐 Token received:", token);
+    console.log("👤 User received:", currentUser);
     const fetchProviders = async () => {
       try {
         const res = await fetch(`${API_BASE}/api/models`);
