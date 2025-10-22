@@ -59,7 +59,7 @@ function Chat({ token, currentUser, onLogout }) {
     setMessages((prev) => [...prev, userMessage]);
 
     try {
-      const token = localStorage.getItem("token")
+      //const token = localStorage.getItem("token")
       const response = await fetch(`${API_BASE}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json","Authorization": `Bearer ${token}` },
@@ -67,7 +67,7 @@ function Chat({ token, currentUser, onLogout }) {
           provider: selectedProvider,
           model: selectedModel,
           message: input,
-          user_id: currentUser || "test-user",
+          user_id: ${currentUser} || "test-user",
         }),
       });
 
