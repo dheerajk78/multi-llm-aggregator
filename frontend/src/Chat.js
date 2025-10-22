@@ -29,7 +29,7 @@ function Chat({ token, currentUser, onLogout }) {
       }
     };
     fetchProviders();
-  }, []);
+  }, [token, currentUser]);
 
   useEffect(() => {
     if (selectedProvider) {
@@ -56,6 +56,12 @@ function Chat({ token, currentUser, onLogout }) {
 
   const sendMessage = async () => {
     if (!input.trim() || !selectedProvider || !selectedModel) return;
+    if (!token) {
+      console.error("Missing token, cannot send message.");
+      return;
+    }
+    console.log("🔐 Chat props:", { token, currentUser });
+    
 
     const userMessage = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
