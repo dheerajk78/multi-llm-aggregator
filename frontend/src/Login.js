@@ -18,8 +18,11 @@ function Login({ onLogin }) {
 
       const data = await res.json();
       if (data.success) {
-        localStorage.setItem("token", data.token); // save JWT
-	onLogin(data.token);  // 🔑 tell App.js we're logged in 
+        //localStorage.setItem("token", data.token); // save JWT	
+ 		 localStorage.setItem("token", data.token);
+  		 localStorage.setItem("currentUser", data.username); // save username
+  		onLogin({ jwt: data.token, username: data.username }); // pass both
+		//#onLogin(data.token);  // 🔑 tell App.js we're logged in 
       } else {
         setError(data.error || "Login failed");
       }
