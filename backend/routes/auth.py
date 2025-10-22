@@ -37,7 +37,7 @@ def login():
             "user": username,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
         }, current_app.config["SECRET_KEY"], algorithm="HS256")
-        return jsonify({"success": True, "token": token})
+        return jsonify({"success": True, "token": token,  "username": username })
     return jsonify({"success": False, "error": "Invalid credentials"}), 401
 
 @auth_bp.route("/logout", methods=["POST"])
